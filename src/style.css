@@ -1,0 +1,40 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  line-height: 1.5;
+  list-style-type: none;
+}
+
+html {
+  /* responise font size ratio I found on the web */
+  font-size: calc(15px + 0.390625vw);
+}
+
+.todo {
+  display: grid;
+  grid-template-areas: "sidebar main";
+  grid-template-columns: 350px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  grid-area: sidebar;
+  background: #fcfaf8;
+}
+
+.main {
+  grid-area: main;
+  background: #fff;
+}
+
+@media (max-width: calc(350px + 450px - 1px)) {
+  .todo {
+    grid-template-columns: 1fr;
+    grid-template-areas: "main";
+  }
+  .sidebar {
+    display: none;
+  }
+}
