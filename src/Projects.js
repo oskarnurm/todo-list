@@ -8,6 +8,10 @@ export default class Project {
     return this.list;
   }
 
+  setList(list) {
+    this.list = list;
+  }
+
   getName() {
     return this.name;
   }
