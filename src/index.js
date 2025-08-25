@@ -2,19 +2,16 @@ import "./style.css";
 import Project from "./Projects";
 import Task from "./Task";
 
-const addTaskBtn = document.getElementById("add-task");
-const form = document.getElementById("task-form");
-const taskList = document.querySelector(".task-list");
-const cancelBtn = document.querySelector(".cancel");
-
-const inbox = new Project("Inbox");
-
 function addTaskToList(project, title, desc, date, prio) {
   const task = new Task(title, desc, date, prio);
   project.add(task);
 }
 
 function renderList(project) {
+  const taskList = document.querySelector(".task-list");
+  const mainTitle = document.querySelector(".main-title");
+
+  mainTitle.textContent = project.getName();
   taskList.textContent = "";
   project.getList().forEach((task) => {
     const taskDiv = document.createElement("div");
@@ -60,31 +57,75 @@ function loadFromStorage(project) {
   project.setList(tasks);
 }
 
-addTaskBtn.addEventListener("click", () => {
-  form.hidden = false;
-  addTaskBtn.hidden = true;
-});
+function addProject(projectsUl, name) {
+  const listItem = document.createElement("li");
+  const linkItem = document.createElement("a");
+  linkItem.textContent = name;
+  linkItem.href = "#";
+  listItem.appendChild(linkItem);
+  projectsUl.appendChild(listItem);
+}
 
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const title = document.getElementById("title").value;
-  const desc = document.getElementById("desc").value;
-  const date = document.getElementById("date").value;
-  const prio = document.getElementById("prio").value;
+function todoController(project) {
+  const addTaskBtn = document.getElementById("add-task");
+  const form = document.getElementById("task-form");
+  const cancelBtn = document.querySelector(".cancel");
+  const navList = document.querySelector(".projects ul");
+  const navListLink = document.querySelectorAll(".projects li a");
+  const addProjBtn = document.querySelector(".add-project");
 
-  addTaskToList(inbox, title, desc, date, prio);
-  saveToStorage(inbox);
-  renderList(inbox);
-  form.reset();
-  form.hidden = true;
-  addTaskBtn.hidden = false;
-});
+  // Show form to add task
+  addTaskBtn.addEventListener("click", () => {
+    form.hidden = false;
+    addTaskBtn.hidden = true;
+  });
 
-cancelBtn.addEventListener("click", () => {
-  form.reset();
-  form.hidden = true;
-  addTaskBtn.hidden = false;
-});
+  // Submit task
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = document.getElementById("title").value;
+    const desc = document.getElementById("desc").value;
+    const date = document.getElementById("date").value;
+    const prio = document.getElementById("prio").value;
 
-loadFromStorage(inbox);
-renderList(inbox);
+    addTaskToList(inbox, title, desc, date, prio);
+    saveToStorage(project);
+    renderList(project);
+    form.reset();
+    form.hidden = true;
+    addTaskBtn.hidden = false;
+  });
+
+  // Cancel submit
+  cancelBtn.addEventListener("click", () => {
+    form.reset();
+    form.hidden = true;
+    addTaskBtn.hidden = false;
+  });
+
+  // Add project
+  addProjBtn.addEventListener("click", () => {
+    const name = prompt("Enter project name:");
+    addProject(navList, name);
+  });
+
+  // Switch projects
+  navListLink.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const projectName = link.textContent.trim();
+      loadFromStorage(projectName);
+      // TODO: figure out how to add projects
+      console.log(projectName);
+    });
+  });
+
+  loadFromStorage(project);
+  renderList(project);
+}
+
+const inbox = new Project("Inbox");
+const today = new Project("Today");
+// TODO: create a list of projects to store them?
+
+todoController(inbox);
