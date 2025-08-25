@@ -1,6 +1,7 @@
 export default class Task {
-  constructor(title, desc, date, prio) {
-    this.title = title;
+  constructor(title, desc, date, prio, id = crypto.randomUUID()) {
+    this.id = id;
+    this.title = title || ""; // Title is required but safeguard incase
     this.desc = desc || "";
     this.date = date || "";
     this.prio = prio || 1;
