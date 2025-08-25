@@ -41,6 +41,22 @@ function renderList() {
 function removeTaskById(id) {
   currentList = currentList.filter((task) => task.getId() !== id);
   renderList();
+  saveToStorage();
+}
+
+function saveToStorage() {
+  localStorage.setItem("tasks", JSON.stringify(currentList));
+}
+
+function loadFromStorage() {
+  const data = localStorage.getItem("tasks");
+  if (data) {
+    const dataJSON = JSON.parse(data);
+    // Convert JSON data back to acceptable format
+    currentList = dataJSON.map(
+      (obj) => new Task(obj.title, obj.desc, obj.date, obj.prio, obj.id),
+    );
+  }
 }
 
 addTaskBtn.addEventListener("click", () => {
@@ -56,6 +72,7 @@ form.addEventListener("submit", (e) => {
   const prio = document.getElementById("prio").value;
 
   addTaskToList(title, desc, date, prio);
+  saveToStorage();
   renderList();
   form.reset();
   form.hidden = true;
@@ -67,3 +84,6 @@ cancelBtn.addEventListener("click", () => {
   form.hidden = true;
   addTaskBtn.hidden = false;
 });
+
+loadFromStorage();
+renderList();
