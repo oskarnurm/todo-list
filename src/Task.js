@@ -4,7 +4,7 @@ export default class Task {
     this.title = title || ""; // Title is required but safeguard incase
     this.desc = desc || "";
     this.date = date || "";
-    this.prio = prio || 1;
+    this.prio = Number(prio) || 1; // Default to 1
   }
 
   getTitle() {
