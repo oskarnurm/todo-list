@@ -1,11 +1,11 @@
 export default class Project {
   constructor(name) {
     this.name = name;
-    this.lib = [];
+    this.list = [];
   }
 
-  getLib() {
-    return this.lib;
+  getList() {
+    return this.list;
   }
 
   getName() {
@@ -17,6 +17,6 @@ export default class Project {
   }
 
   add(task) {
-    this.lib.push(task);
+    this.list.push(task);
   }
 }
