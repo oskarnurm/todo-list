@@ -8,23 +8,16 @@
   <body>
     <div class="todo">
       <aside class="sidebar">
-        <nav class="today-inbox">
-          <ul>
-            <li><a href="/Inbox">Inbox</a></li>
-            <li><a href="/Today">Today</a></li>
-          </ul>
-        </nav>
-        <nav class="projects">
+        <div class="sidebar-header">
           <h3>My Projects</h3>
-          <ul>
-            <li><a href="#">One-off</a></li>
-            <li><a href="#">Someday</a></li>
-            <li><a href="#">School</a></li>
-          </ul>
+          <button class="add-project">+</button>
+        </div>
+        <nav class="projects">
+          <ul></ul>
         </nav>
       </aside>
       <main class="main">
-        <h1>Inbox</h1>
+        <div class="main-title"></div>
         <div class="task-list"></div>
 
         <button id="add-task" type="button">+ Add task</button>

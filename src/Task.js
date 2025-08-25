@@ -23,6 +23,10 @@ export default class Task {
     return this.prio;
   }
 
+  getId() {
+    return this.id;
+  }
+
   setTitle(title) {
     this.title = title;
   }
@@ -38,4 +42,6 @@ export default class Task {
   setPrio(prio) {
     this.prio = prio;
   }
+
+  //TODO: add toJSON and ohter JSON helper methods?
 }
