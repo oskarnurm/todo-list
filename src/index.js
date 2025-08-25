@@ -7,16 +7,16 @@ const form = document.getElementById("task-form");
 const taskList = document.querySelector(".task-list");
 const cancelBtn = document.querySelector(".cancel");
 
-let currentList = [];
+const inbox = new Project("Inbox");
 
-function addTaskToList(title, desc, date, prio) {
+function addTaskToList(project, title, desc, date, prio) {
   const task = new Task(title, desc, date, prio);
-  currentList.push(task);
+  project.add(task);
 }
 
-function renderList() {
+function renderList(project) {
   taskList.textContent = "";
-  currentList.forEach((task) => {
+  project.getList().forEach((task) => {
     const taskDiv = document.createElement("div");
     const inputDiv = document.createElement("input");
     const titleSpan = document.createElement("span");
@@ -27,7 +27,7 @@ function renderList() {
     inputDiv.type = "radio";
     inputDiv.classList.add("checked");
     inputDiv.addEventListener("change", () => {
-      removeTaskById(task.getId());
+      removeTaskById(project, task.getId());
     });
 
     taskDiv.classList.add("task");
@@ -38,25 +38,26 @@ function renderList() {
   });
 }
 
-function removeTaskById(id) {
-  currentList = currentList.filter((task) => task.getId() !== id);
-  renderList();
-  saveToStorage();
+function removeTaskById(project, id) {
+  project.setList(project.getList().filter((task) => task.getId() !== id));
+  renderList(project);
+  saveToStorage(project);
 }
 
-function saveToStorage() {
-  localStorage.setItem("tasks", JSON.stringify(currentList));
+function saveToStorage(project) {
+  localStorage.setItem(project.getName(), JSON.stringify(project));
 }
 
-function loadFromStorage() {
-  const data = localStorage.getItem("tasks");
-  if (data) {
-    const dataJSON = JSON.parse(data);
-    // Convert JSON data back to acceptable format
-    currentList = dataJSON.map(
-      (obj) => new Task(obj.title, obj.desc, obj.date, obj.prio, obj.id),
-    );
-  }
+function loadFromStorage(project) {
+  const data = localStorage.getItem(project.getName());
+  if (!data) return;
+  const parsed = JSON.parse(data);
+  // Convert JSON data back to acceptable format
+  //
+  const tasks = parsed.list.map(
+    (obj) => new Task(obj.title, obj.desc, obj.date, obj.prio, obj.id),
+  );
+  project.setList(tasks);
 }
 
 addTaskBtn.addEventListener("click", () => {
@@ -71,9 +72,9 @@ form.addEventListener("submit", (e) => {
   const date = document.getElementById("date").value;
   const prio = document.getElementById("prio").value;
 
-  addTaskToList(title, desc, date, prio);
-  saveToStorage();
-  renderList();
+  addTaskToList(inbox, title, desc, date, prio);
+  saveToStorage(inbox);
+  renderList(inbox);
   form.reset();
   form.hidden = true;
   addTaskBtn.hidden = false;
@@ -85,5 +86,5 @@ cancelBtn.addEventListener("click", () => {
   addTaskBtn.hidden = false;
 });
 
-loadFromStorage();
-renderList();
+loadFromStorage(inbox);
+renderList(inbox);
