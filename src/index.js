@@ -18,15 +18,29 @@ function renderList() {
   taskList.textContent = "";
   currentList.forEach((task) => {
     const taskDiv = document.createElement("div");
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    taskDiv.classList.add("task");
-    checkbox.classList.add("checkbox");
+    const inputDiv = document.createElement("input");
+    const titleSpan = document.createElement("span");
 
-    taskDiv.textContent = task.getTitle();
-    taskDiv.appendChild(checkbox);
+    titleSpan.classList.add("task-title");
+    titleSpan.textContent = task.getTitle();
+
+    inputDiv.type = "radio";
+    inputDiv.classList.add("checked");
+    inputDiv.addEventListener("change", () => {
+      removeTaskById(task.getId());
+    });
+
+    taskDiv.classList.add("task");
+    taskDiv.appendChild(inputDiv);
+    taskDiv.appendChild(titleSpan);
+
     taskList.appendChild(taskDiv);
   });
+}
+
+function removeTaskById(id) {
+  currentList = currentList.filter((task) => task.getId() !== id);
+  renderList();
 }
 
 addTaskBtn.addEventListener("click", () => {
