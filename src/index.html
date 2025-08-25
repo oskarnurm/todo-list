@@ -22,6 +22,24 @@
       <main class="main">
         <h1>Inbox</h1>
         <div class="task-list"></div>
+
+        <button id="add-task" type="button">+ Add task</button>
+
+        <form id="task-form" hidden>
+          <input type="text" id="title" placeholder="Task name" required />
+          <input type="text" id="desc" placeholder="Description" />
+          <input type="date" id="date" />
+          <select id="prio">
+            <option value="" disabled selected hidden>Priority</option>
+            <option value="high">Priority 1</option>
+            <option value="normal">Priority 2</option>
+            <option value="low">Priority 3</option>
+          </select>
+          <div class="form-buttons">
+            <button class="cancel">Cancel</button>
+            <input class="submit" type="submit" value="Submit" />
+          </div>
+        </form>
       </main>
     </div>
   </body>
