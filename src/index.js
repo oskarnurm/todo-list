@@ -51,6 +51,11 @@ function ScreenController() {
   let currentSelectedProject = null;
   const todo = TodoController();
 
+  // query once to save cost
+  const taskListUL = document.querySelector(".task-list");
+  const projectUL = document.querySelector(".project-list");
+  const projectTitleDiv = document.querySelector(".project-title");
+
   // Create dummy data
   const defaultProject = todo.createProject("Default");
   todo.createProject("inbox");
