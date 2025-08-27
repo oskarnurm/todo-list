@@ -113,6 +113,7 @@ function ScreenController() {
   }
 
   renderProjects();
+  renderProjectTaskList(defaultProject);
 }
 
 ScreenController();
