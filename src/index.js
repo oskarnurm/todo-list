@@ -87,8 +87,8 @@ function ScreenController() {
   }
 
   function renderProjectTaskList(project) {
-    const taskListUL = document.querySelector(".task-list");
     taskListUL.textContent = "";
+    projectTitleDiv.textContent = project.getTitle();
     project.getTaskList().forEach((task) => {
       const taskElement = createTaskElement(task);
       taskListUL.appendChild(taskElement);
@@ -96,10 +96,7 @@ function ScreenController() {
   }
 
   function renderProjects() {
-    const projectUL = document.querySelector(".project-list");
-    const projectTitleDiv = document.querySelector(".project-title");
     projectUL.textContent = "";
-
     todo.getProjects().forEach((project) => {
       const projectElement = createProjectElement(project);
       projectUL.appendChild(projectElement);
