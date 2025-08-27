@@ -48,13 +48,18 @@ function TodoController() {
 }
 
 function ScreenController() {
-  let currentSelectedProject = null;
+  let SELECTED_PROJECT = null;
   const todo = TodoController();
 
   // query once to save cost
   const taskListUL = document.querySelector(".task-list");
   const projectUL = document.querySelector(".project-list");
   const projectTitleDiv = document.querySelector(".project-title");
+  const addProjectBtn = document.querySelector(".add-project");
+  const addTaskBtn = document.querySelector(".add-task");
+  const taskForm = document.querySelector(".task-form");
+  const cancelBtn = document.querySelector(".cancel");
+  const submitBtn = document.querySelector(".submit");
 
   // Create dummy data
   const defaultProject = todo.createProject("Default");
@@ -102,9 +107,8 @@ function ScreenController() {
 
     projectUL.addEventListener("click", (e) => {
       const projectId = e.target.dataset.projectId;
-      currentSelectedProject = todo.findProjectById(projectId);
-      projectTitleDiv.textContent = currentSelectedProject.getTitle();
-      renderProjectTaskList(currentSelectedProject);
+      SELECTED_PROJECT = todo.findProjectById(projectId);
+      renderProjectTaskList(SELECTED_PROJECT);
     });
   }
 
