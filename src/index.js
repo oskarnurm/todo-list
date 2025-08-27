@@ -68,7 +68,41 @@ function ScreenController() {
   todo.createTask(defaultProject, "Clean your room");
   todo.createTask(defaultProject, "Do homework");
   todo.createTask(defaultProject, "Walk the dog");
-  currentSelectedProject = defaultProject;
+
+  SELECTED_PROJECT = defaultProject;
+
+  addProjectBtn.addEventListener("click", () => {
+    const title = prompt("Enter project name:");
+    todo.createProject(title);
+    renderProjects();
+  });
+
+  addTaskBtn.addEventListener("click", () => {
+    taskForm.hidden = false;
+    addTaskBtn.hidden = true;
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    taskForm.reset();
+    taskForm.hidden = true;
+    addTaskBtn.hidden = false;
+  });
+
+  taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = document.getElementById("title").value;
+    const desc = document.getElementById("desc").value;
+    const date = document.getElementById("date").value;
+    const prio = document.getElementById("prio").value;
+
+    todo.createTask(SELECTED_PROJECT, title);
+
+    // Does the rendering order matter here?
+    taskForm.hidden = true;
+    renderProjectTaskList(SELECTED_PROJECT);
+    addTaskBtn.hidden = false;
+    taskForm.reset();
+  });
 
   function createProjectElement(project) {
     const li = document.createElement("li");
