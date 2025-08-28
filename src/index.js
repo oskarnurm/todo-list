@@ -1,13 +1,21 @@
 import "./style.css";
 
-function Task(title) {
+function Task(opts) {
   const id = crypto.randomUUID();
-  let _title = title;
+  const data = {
+    title: opts.title,
+    desc: opts.desc || "",
+    date: opts.date || null,
+    prio: opts.prio || "normal",
+  };
 
-  const getTitle = () => _title;
+  const getTitle = () => data.title;
+  const getDesc = () => data.desc;
+  const getDate = () => data.date;
+  const getPrio = () => data.prio;
   const getId = () => id;
 
-  return { getTitle, getId };
+  return { getTitle, getDesc, getDate, getPrio, getId };
 }
 
 function Project(title) {
