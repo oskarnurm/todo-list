@@ -21,14 +21,15 @@ function Task(opts) {
 function Project(title) {
   const id = crypto.randomUUID();
   let _title = title;
-  const taskList = [];
+  let taskList = [];
 
   const getTitle = () => _title;
   const getTaskList = () => taskList;
   const addTask = (task) => taskList.push(task);
+  const updateTaskList = (newList) => (taskList = newList);
   const getId = () => id;
 
-  return { getId, getTitle, getTaskList, addTask };
+  return { getId, getTitle, getTaskList, addTask, updateTaskList };
 }
 
 function TodoController() {
