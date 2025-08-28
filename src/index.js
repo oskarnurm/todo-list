@@ -60,7 +60,6 @@ function ScreenController() {
   let SELECTED_PROJECT = null;
   const todo = TodoController();
 
-  // query once to save cost
   const taskListUL = document.querySelector(".task-list");
   const projectUL = document.querySelector(".project-list");
   const projectTitleDiv = document.querySelector(".project-title");
@@ -68,50 +67,22 @@ function ScreenController() {
   const addTaskBtn = document.querySelector(".add-task");
   const taskForm = document.querySelector(".task-form");
   const cancelBtn = document.querySelector(".cancel");
-  const submitBtn = document.querySelector(".submit");
 
-  // Create dummy data
+  // Dummy data
   const defaultProject = todo.createProject("Default");
   todo.createProject("inbox");
   todo.createProject("school");
-  todo.createTask(defaultProject, "Clean your room");
-  todo.createTask(defaultProject, "Do homework");
-  todo.createTask(defaultProject, "Walk the dog");
+  todo.createTask(defaultProject, { title: "clean room" });
+  todo.createTask(defaultProject, { title: "Do homework" });
+  todo.createTask(defaultProject, { title: "Walk the dog" });
 
   SELECTED_PROJECT = defaultProject;
 
-  addProjectBtn.addEventListener("click", () => {
-    const title = prompt("Enter project name:");
-    todo.createProject(title);
-    renderProjects();
-  });
-
-  addTaskBtn.addEventListener("click", () => {
-    taskForm.hidden = false;
-    addTaskBtn.hidden = true;
-  });
-
-  cancelBtn.addEventListener("click", () => {
-    taskForm.reset();
-    taskForm.hidden = true;
-    addTaskBtn.hidden = false;
-  });
-
-  taskForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const title = document.getElementById("title").value;
-    const desc = document.getElementById("desc").value;
-    const date = document.getElementById("date").value;
-    const prio = document.getElementById("prio").value;
-
-    todo.createTask(SELECTED_PROJECT, title);
-
-    // Does the rendering order matter here?
-    taskForm.hidden = true;
-    renderProjectTaskList(SELECTED_PROJECT);
-    addTaskBtn.hidden = false;
-    taskForm.reset();
-  });
+  function removeTaskById(project, taskId) {
+    project.updateTaskList(
+      project.getTaskList().filter((task) => task.getId() !== taskId),
+    );
+  }
 
   function createProjectElement(project) {
     const li = document.createElement("li");
@@ -123,8 +94,21 @@ function ScreenController() {
 
   function createTaskElement(task) {
     const li = document.createElement("li");
-    li.textContent = task.getTitle();
-    li.dataset.projectId = task.getId();
+    const titleDiv = document.createElement("div");
+    const descDiv = document.createElement("div");
+    const dateDiv = document.createElement("div");
+    const removeDiv = document.createElement("input");
+
+    titleDiv.textContent = task.getTitle();
+    descDiv.textContent = task.getDesc();
+    dateDiv.textContent = task.getDate();
+    removeDiv.type = "radio";
+
+    titleDiv.appendChild(removeDiv);
+    li.appendChild(titleDiv);
+    li.appendChild(descDiv);
+    li.appendChild(dateDiv);
+    li.dataset.taskId = task.getId();
     li.className = "task";
     return li;
   }
@@ -144,13 +128,58 @@ function ScreenController() {
       const projectElement = createProjectElement(project);
       projectUL.appendChild(projectElement);
     });
+  }
 
-    projectUL.addEventListener("click", (e) => {
+  // Event listeners
+  addProjectBtn.addEventListener("click", () => {
+    const title = prompt("Enter project name:");
+    todo.createProject(title);
+    renderProjects();
+  });
+
+  addTaskBtn.addEventListener("click", () => {
+    taskForm.hidden = false;
+    addTaskBtn.hidden = true;
+  });
+
+  cancelBtn.addEventListener("click", () => {
+    taskForm.reset();
+    taskForm.hidden = true;
+    addTaskBtn.hidden = false;
+  });
+
+  taskForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const daskData = {
+      title: document.getElementById("title").value,
+      desc: document.getElementById("desc").value,
+      date: document.getElementById("date").value,
+      prio: document.getElementById("prio").value,
+    };
+    todo.createTask(SELECTED_PROJECT, daskData);
+
+    // Does the rendering order matter here?
+    taskForm.hidden = true;
+    renderProjectTaskList(SELECTED_PROJECT);
+    addTaskBtn.hidden = false;
+    taskForm.reset();
+  });
+
+  taskListUL.addEventListener("change", (e) => {
+    if (e.target.type === "radio") {
+      const taskId = e.target.closest(".task").dataset.taskId;
+      removeTaskById(SELECTED_PROJECT, taskId);
+      renderProjectTaskList(SELECTED_PROJECT);
+    }
+  });
+
+  projectUL.addEventListener("click", (e) => {
+    if (e.target.classList.contains("project")) {
       const projectId = e.target.dataset.projectId;
       SELECTED_PROJECT = todo.findProjectById(projectId);
       renderProjectTaskList(SELECTED_PROJECT);
-    });
-  }
+    }
+  });
 
   renderProjects();
   renderProjectTaskList(defaultProject);
