@@ -14,22 +14,31 @@ function Task(opts) {
   const getDate = () => data.date;
   const getPrio = () => data.prio;
   const getId = () => id;
+  const updateTask = (taskData) => Object.assign(data, taskData);
 
-  return { getTitle, getDesc, getDate, getPrio, getId };
+  return { getTitle, getDesc, getDate, getPrio, getId, updateTask };
 }
 
 function Project(title) {
   const id = crypto.randomUUID();
   let _title = title;
-  let taskList = [];
+  let tasks = [];
 
   const getTitle = () => _title;
-  const getTaskList = () => taskList;
-  const addTask = (task) => taskList.push(task);
-  const updateTaskList = (newList) => (taskList = newList);
+  const getTaskList = () => tasks;
+  const addTask = (task) => tasks.push(task);
+  const updateTaskList = (newList) => (tasks = newList);
   const getId = () => id;
+  const findTaskById = (id) => tasks.find((task) => task.getId() === id);
 
-  return { getId, getTitle, getTaskList, addTask, updateTaskList };
+  return {
+    getId,
+    getTitle,
+    getTaskList,
+    addTask,
+    updateTaskList,
+    findTaskById,
+  };
 }
 
 function TodoController() {
@@ -58,6 +67,7 @@ function TodoController() {
 
 function ScreenController() {
   let SELECTED_PROJECT = null;
+  let SELECTED_TASK = null;
   const todo = TodoController();
 
   const taskListUL = document.querySelector(".task-list");
@@ -67,6 +77,11 @@ function ScreenController() {
   const addTaskBtn = document.querySelector(".add-task");
   const taskForm = document.querySelector(".task-form");
   const cancelBtn = document.querySelector(".cancel");
+  const popupDiv = document.querySelector(".task-popup");
+  const closePopup = document.querySelector(".popup-close");
+  const popupTaskTitle = document.getElementById("taskTitle");
+  const popupTaskDesc = document.getElementById("taskDesc");
+  const popupTaskDate = document.getElementById("taskDate");
 
   // Dummy data
   const defaultProject = todo.createProject("Default");
@@ -98,6 +113,10 @@ function ScreenController() {
     const descDiv = document.createElement("div");
     const dateDiv = document.createElement("div");
     const removeDiv = document.createElement("input");
+
+    titleDiv.className = "task-title";
+    descDiv.className = "task-desc";
+    dateDiv.className = "task-date";
 
     titleDiv.textContent = task.getTitle();
     descDiv.textContent = task.getDesc();
@@ -180,6 +199,49 @@ function ScreenController() {
       renderProjectTaskList(SELECTED_PROJECT);
     }
   });
+
+  taskListUL.addEventListener("click", (e) => {
+    // Don't open pop-up when clicking on radio button because that should only remove the task
+    if (e.target.type === "radio") {
+      return;
+    }
+    const taskElement = e.target.closest(".task");
+    if (taskElement) {
+      const taskId = taskElement.dataset.taskId;
+      SELECTED_TASK = SELECTED_PROJECT.findTaskById(taskId);
+
+      const taskTitle = taskElement.querySelector(".task-title").textContent;
+      const taskDesc = taskElement.querySelector(".task-desc").textContent;
+      const taskDate = taskElement.querySelector(".task-date").textContent;
+      popupDiv.showModal();
+      popupTaskTitle.value = taskTitle;
+      popupTaskDesc.value = taskDesc;
+      popupTaskDate.value = taskDate;
+    }
+  });
+
+  popupDiv.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const daskData = {
+      title: popupTaskTitle.value,
+      desc: popupTaskDesc.value,
+      date: popupTaskDate.value,
+    };
+    if (SELECTED_TASK) {
+      SELECTED_TASK.updateTask(daskData);
+      renderProjectTaskList(SELECTED_PROJECT);
+      popupDiv.close();
+    }
+  });
+
+  closePopup.addEventListener("click", () => popupDiv.close());
+
+  // When the user clicks anywhere outside of the dialog, close it
+  window.onclick = function (e) {
+    if (e.target == popupDiv) {
+      popupDiv.close();
+    }
+  };
 
   renderProjects();
   renderProjectTaskList(defaultProject);
