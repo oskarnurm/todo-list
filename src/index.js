@@ -41,8 +41,8 @@ function TodoController() {
     return newProject;
   };
 
-  const createTask = (project, title) => {
-    const newTask = Task(title);
+  const createTask = (project, taskData) => {
+    const newTask = Task(taskData);
     project.addTask(newTask);
     return newTask;
   };
