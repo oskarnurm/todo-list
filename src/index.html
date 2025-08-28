@@ -17,17 +17,16 @@
       <main class="main">
         <div class="project-title"></div>
         <ul class="task-list"></ul>
-        <button id="add-task" type="button">+ Add task</button>
+        <button class="add-task" type="button">+ Add task</button>
 
-        <form id="task-form" hidden>
+        <form class="task-form" hidden>
           <input type="text" id="title" placeholder="Task name" required />
           <input type="text" id="desc" placeholder="Description" />
           <input type="date" id="date" />
           <select id="prio">
-            <option value="" disabled selected hidden>Priority</option>
-            <option value="high">Priority 1</option>
-            <option value="normal">Priority 2</option>
-            <option value="low">Priority 3</option>
+            <option value="high">High</option>
+            <option value="normal">Medium</option>
+            <option value="low" selected>Low</option>
           </select>
           <div class="form-buttons">
             <button class="cancel">Cancel</button>
