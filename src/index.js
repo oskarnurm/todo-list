@@ -152,6 +152,7 @@ function ScreenController() {
   // Event listeners
   addProjectBtn.addEventListener("click", () => {
     const title = prompt("Enter project name:");
+    if (!title) return;
     todo.createProject(title);
     renderProjects();
   });
