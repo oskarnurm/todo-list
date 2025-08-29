@@ -134,6 +134,8 @@ function ScreenController() {
     titleContainer.className = "task-title";
     descSpan.className = "task-desc";
     dateDiv.className = "task-date";
+    removeDiv.className = `prio-${task.getPrio()}`;
+    removeDiv.type = "radio";
 
     titleH.textContent = task.getTitle();
     descSpan.textContent = task.getDesc();
