@@ -6,7 +6,7 @@ function Task(opts) {
     title: opts.title,
     desc: opts.desc || "",
     date: opts.date || null,
-    prio: opts.prio || "normal",
+    prio: opts.prio || "low",
   };
 
   const getTitle = () => data.title;
@@ -29,6 +29,8 @@ function Project(title) {
   const addTask = (task) => tasks.push(task);
   const updateTaskList = (newList) => (tasks = newList);
   const getId = () => id;
+  const removeTaskById = (id) =>
+    (tasks = tasks.filter((task) => task.getId() !== id));
   const findTaskById = (id) => tasks.find((task) => task.getId() === id);
 
   return {
@@ -38,11 +40,12 @@ function Project(title) {
     addTask,
     updateTaskList,
     findTaskById,
+    removeTaskById,
   };
 }
 
 function TodoController() {
-  const projects = [];
+  let projects = [];
 
   const createProject = (title) => {
     const newProject = Project(title);
@@ -56,13 +59,21 @@ function TodoController() {
     return newTask;
   };
 
-  const findProjectById = (id) => {
-    return projects.find((project) => project.getId() === id);
-  };
+  const findProjectById = (id) =>
+    projects.find((project) => project.getId() === id);
+
+  const removeProjectById = (id) =>
+    (projects = projects.filter((project) => project.getId() !== id));
 
   const getProjects = () => projects;
 
-  return { findProjectById, createProject, createTask, getProjects };
+  return {
+    findProjectById,
+    createProject,
+    createTask,
+    getProjects,
+    removeProjectById,
+  };
 }
 
 function ScreenController() {
@@ -73,7 +84,7 @@ function ScreenController() {
   const taskListUL = document.querySelector(".task-list");
   const projectListUL = document.querySelector(".project-list");
   const projectTitleDiv = document.querySelector(".project-title");
-  const addProjectBtn = document.querySelector(".add-project");
+  const addProjectBtn = document.querySelector(".project-add");
   const showTaskForm = document.querySelector(".show-form");
 
   const formDiv = document.querySelector(".form");
@@ -101,32 +112,30 @@ function ScreenController() {
   SELECTED_PROJECT = defaultProject;
 
   function removeTaskById(project, taskId) {
-    project.updateTaskList(
-      project.getTaskList().filter((task) => task.getId() !== taskId),
-    );
+    project.removeTaskById(taskId);
   }
 
   function createProjectElement(project) {
     const li = document.createElement("li");
-    const deleteBtn = document.createElement("button");
-    const projectH = document.createElement("h2");
+    const removeBtn = document.createElement("button");
+    const projectH = document.createElement("h3");
 
-    deleteBtn.textContent = "-";
+    removeBtn.textContent = "-";
     projectH.textContent = `# ${project.getTitle()}`;
 
-    deleteBtn.className = "project-delete";
+    removeBtn.className = "project-remove";
     li.className = "project";
     li.dataset.projectId = project.getId();
 
     li.appendChild(projectH);
-    li.appendChild(deleteBtn);
+    li.appendChild(removeBtn);
     return li;
   }
 
   function createTaskElement(task) {
     const li = document.createElement("li");
     const titleContainer = document.createElement("div");
-    const titleH = document.createElement("h3");
+    const titleH = document.createElement("h4");
     const descSpan = document.createElement("span");
     const dateDiv = document.createElement("div");
     const removeDiv = document.createElement("input");
@@ -158,6 +167,7 @@ function ScreenController() {
       const taskElement = createTaskElement(task);
       taskListUL.appendChild(taskElement);
     });
+    showTaskForm.hidden = false;
   }
 
   function renderProjects() {
@@ -224,6 +234,18 @@ function ScreenController() {
       const projectId = projectElement.dataset.projectId;
       SELECTED_PROJECT = todo.findProjectById(projectId);
       renderProjectTaskList(SELECTED_PROJECT);
+    }
+  });
+
+  // Remove projects
+  projectListUL.addEventListener("click", (e) => {
+    if (e.target.matches("button.project-remove")) {
+      const projectId = e.target.closest(".project").dataset.projectId;
+      todo.removeProjectById(projectId);
+      renderProjects();
+      taskListUL.textContent = "";
+      projectTitleDiv.textContent = "";
+      showTaskForm.hidden = true;
     }
   });
 
