@@ -9,23 +9,23 @@
     <div class="todo">
       <aside class="sidebar">
         <div class="sidebar-header">
-          <h3>My Projects</h3>
-          <button class="add-project">+</button>
+          <h2>My Projects</h2>
+          <button class="project-add">+</button>
         </div>
         <ul class="project-list"></ul>
       </aside>
       <main class="main">
-        <div class="project-title"></div>
+        <h1 class="project-title"></h1>
         <ul class="task-list"></ul>
-        <button class="add-task" type="button">+ Add task</button>
+        <button class="show-form" type="button">+ Add task</button>
 
-        <form class="task-form" hidden>
-          <input type="text" id="title" placeholder="Task name" required />
-          <input type="text" id="desc" placeholder="Description" />
-          <input type="date" id="date" />
-          <select id="prio">
+        <form class="form" hidden>
+          <input type="text" id="form-title" placeholder="Task name" required />
+          <input type="text" id="form-desc" placeholder="Description" />
+          <input type="date" id="form-date" />
+          <select id="form-prio">
             <option value="high">High</option>
-            <option value="normal">Medium</option>
+            <option value="medium">Medium</option>
             <option value="low" selected>Low</option>
           </select>
           <div class="form-buttons">
@@ -34,7 +34,7 @@
           </div>
         </form>
 
-        <dialog class="task-popup">
+        <dialog class="popup">
           <form method="dialog">
             <header>
               <button class="popup-close" type="button" aria-label="Close">
@@ -42,14 +42,20 @@
               </button>
             </header>
             <section>
-              <input type="text" id="taskTitle" placeholder="Title" required />
-              <input type="date" id="taskDate" />
-              <select id="prio">
+              <input
+                type="text"
+                id="popup-title"
+                placeholder="Title"
+                required
+              />
+              <input type="date" id="popup-date" />
+              <select id="popup-prio">
+                <!-- <option value="" selected>Priority</option> -->
                 <option value="high">High</option>
-                <option value="normal">Medium</option>
-                <option value="low" selected>Low</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
               </select>
-              <textarea id="taskDesc" placeholder="Description"></textarea>
+              <textarea id="popup-desc" placeholder="Description"></textarea>
             </section>
             <footer>
               <button value="done">Done</button>
