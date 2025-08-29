@@ -8,8 +8,7 @@
 }
 
 /* Undo the reset for dialogs (and their contents) */
-dialog,
-dialog * {
+dialog {
   margin: revert;
   padding: revert;
 }
@@ -34,6 +33,36 @@ html {
 .main {
   grid-area: main;
   background: #fff;
+}
+
+/* Base custom radio */
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none; /* Safari */
+  width: 0.8rem;
+  height: 0.8rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s;
+}
+
+input[type="radio"]:hover {
+  background-color: currentColor;
+  opacity: 1;
+}
+
+input[type="radio"].prio-high {
+  color: red;
+}
+input[type="radio"].prio-medium {
+  color: green;
+}
+input[type="radio"].prio-low {
+  color: grey;
 }
 
 @media (max-width: calc(350px + 450px - 1px)) {
