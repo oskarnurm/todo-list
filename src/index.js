@@ -71,17 +71,24 @@ function ScreenController() {
   const todo = TodoController();
 
   const taskListUL = document.querySelector(".task-list");
-  const projectUL = document.querySelector(".project-list");
+  const projectListUL = document.querySelector(".project-list");
   const projectTitleDiv = document.querySelector(".project-title");
   const addProjectBtn = document.querySelector(".add-project");
-  const addTaskBtn = document.querySelector(".add-task");
-  const taskForm = document.querySelector(".task-form");
-  const cancelBtn = document.querySelector(".cancel");
-  const popupDiv = document.querySelector(".task-popup");
-  const closePopup = document.querySelector(".popup-close");
-  const popupTaskTitle = document.getElementById("taskTitle");
-  const popupTaskDesc = document.getElementById("taskDesc");
-  const popupTaskDate = document.getElementById("taskDate");
+  const showTaskForm = document.querySelector(".show-form");
+
+  const formDiv = document.querySelector(".form");
+  const formTitle = document.getElementById("form-title");
+  const formDesc = document.getElementById("form-desc");
+  const formDate = document.getElementById("form-date");
+  const formPrio = document.getElementById("form-prio");
+  const formCancel = document.querySelector(".cancel");
+
+  const popupDiv = document.querySelector(".popup");
+  const popupClose = document.querySelector(".popup-close");
+  const popupTaskTitle = document.getElementById("popup-title");
+  const popupTaskDesc = document.getElementById("popup-desc");
+  const popupTaskDate = document.getElementById("popup-date");
+  const popupTaskPrio = document.getElementById("popup-prio");
 
   // Dummy data
   const defaultProject = todo.createProject("Default");
@@ -101,31 +108,41 @@ function ScreenController() {
 
   function createProjectElement(project) {
     const li = document.createElement("li");
-    li.textContent = project.getTitle();
-    li.dataset.projectId = project.getId();
+    const deleteBtn = document.createElement("button");
+    const projectH = document.createElement("h2");
+
+    deleteBtn.textContent = "-";
+    projectH.textContent = `# ${project.getTitle()}`;
+
+    deleteBtn.className = "project-delete";
     li.className = "project";
+    li.dataset.projectId = project.getId();
+
+    li.appendChild(projectH);
+    li.appendChild(deleteBtn);
     return li;
   }
 
   function createTaskElement(task) {
     const li = document.createElement("li");
-    const titleDiv = document.createElement("div");
-    const descDiv = document.createElement("div");
+    const titleContainer = document.createElement("div");
+    const titleH = document.createElement("h3");
+    const descSpan = document.createElement("span");
     const dateDiv = document.createElement("div");
     const removeDiv = document.createElement("input");
 
-    titleDiv.className = "task-title";
-    descDiv.className = "task-desc";
+    titleContainer.className = "task-title";
+    descSpan.className = "task-desc";
     dateDiv.className = "task-date";
 
-    titleDiv.textContent = task.getTitle();
-    descDiv.textContent = task.getDesc();
+    titleH.textContent = task.getTitle();
+    descSpan.textContent = task.getDesc();
     dateDiv.textContent = task.getDate();
-    removeDiv.type = "radio";
 
-    titleDiv.appendChild(removeDiv);
-    li.appendChild(titleDiv);
-    li.appendChild(descDiv);
+    titleContainer.appendChild(removeDiv);
+    titleContainer.appendChild(titleH);
+    li.appendChild(titleContainer);
+    li.appendChild(descSpan);
     li.appendChild(dateDiv);
     li.dataset.taskId = task.getId();
     li.className = "task";
@@ -142,10 +159,10 @@ function ScreenController() {
   }
 
   function renderProjects() {
-    projectUL.textContent = "";
+    projectListUL.textContent = "";
     todo.getProjects().forEach((project) => {
       const projectElement = createProjectElement(project);
-      projectUL.appendChild(projectElement);
+      projectListUL.appendChild(projectElement);
     });
   }
 
@@ -175,18 +192,18 @@ function ScreenController() {
   formDiv.addEventListener("submit", (e) => {
     e.preventDefault();
     const daskData = {
-      title: document.getElementById("title").value,
-      desc: document.getElementById("desc").value,
-      date: document.getElementById("date").value,
-      prio: document.getElementById("prio").value,
+      title: formTitle.value,
+      desc: formDesc.value,
+      date: formDate.value,
+      prio: formPrio.value,
     };
     todo.createTask(SELECTED_PROJECT, daskData);
 
     // Does the rendering order matter here?
-    taskForm.hidden = true;
+    formDiv.hidden = true;
     renderProjectTaskList(SELECTED_PROJECT);
-    addTaskBtn.hidden = false;
-    taskForm.reset();
+    showTaskForm.hidden = false;
+    formDiv.reset();
   });
 
   // Remove task
@@ -219,13 +236,11 @@ function ScreenController() {
       const taskId = taskElement.dataset.taskId;
       SELECTED_TASK = SELECTED_PROJECT.findTaskById(taskId);
 
-      const taskTitle = taskElement.querySelector(".task-title").textContent;
-      const taskDesc = taskElement.querySelector(".task-desc").textContent;
-      const taskDate = taskElement.querySelector(".task-date").textContent;
+      popupTaskTitle.value = SELECTED_TASK.getTitle();
+      popupTaskDesc.value = SELECTED_TASK.getDesc();
+      popupTaskDate.value = SELECTED_TASK.getDate();
+      popupTaskPrio.value = SELECTED_TASK.getPrio();
       popupDiv.showModal();
-      popupTaskTitle.value = taskTitle;
-      popupTaskDesc.value = taskDesc;
-      popupTaskDate.value = taskDate;
     }
   });
 
@@ -236,6 +251,7 @@ function ScreenController() {
       title: popupTaskTitle.value,
       desc: popupTaskDesc.value,
       date: popupTaskDate.value,
+      prio: popupTaskPrio.value,
     };
     if (SELECTED_TASK) {
       SELECTED_TASK.updateTask(daskData);
