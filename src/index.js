@@ -150,6 +150,7 @@ function ScreenController() {
   }
 
   // Event listeners
+  // Get projects name
   addProjectBtn.addEventListener("click", () => {
     const title = prompt("Enter project name:");
     if (!title) return;
@@ -157,18 +158,21 @@ function ScreenController() {
     renderProjects();
   });
 
-  addTaskBtn.addEventListener("click", () => {
-    taskForm.hidden = false;
-    addTaskBtn.hidden = true;
+  // Show task form
+  showTaskForm.addEventListener("click", () => {
+    formDiv.hidden = false;
+    showTaskForm.hidden = true;
   });
 
-  cancelBtn.addEventListener("click", () => {
-    taskForm.reset();
-    taskForm.hidden = true;
-    addTaskBtn.hidden = false;
+  // Cancel task form
+  formCancel.addEventListener("click", () => {
+    formDiv.reset();
+    formDiv.hidden = true;
+    showTaskForm.hidden = false;
   });
 
-  taskForm.addEventListener("submit", (e) => {
+  // Submit the task form
+  formDiv.addEventListener("submit", (e) => {
     e.preventDefault();
     const daskData = {
       title: document.getElementById("title").value,
@@ -185,6 +189,7 @@ function ScreenController() {
     taskForm.reset();
   });
 
+  // Remove task
   taskListUL.addEventListener("change", (e) => {
     if (e.target.type === "radio") {
       const taskId = e.target.closest(".task").dataset.taskId;
@@ -193,14 +198,17 @@ function ScreenController() {
     }
   });
 
-  projectUL.addEventListener("click", (e) => {
-    if (e.target.classList.contains("project")) {
-      const projectId = e.target.dataset.projectId;
+  // Switch projects
+  projectListUL.addEventListener("click", (e) => {
+    const projectElement = e.target.closest("[data-project-id]");
+    if (projectElement) {
+      const projectId = projectElement.dataset.projectId;
       SELECTED_PROJECT = todo.findProjectById(projectId);
       renderProjectTaskList(SELECTED_PROJECT);
     }
   });
 
+  // Open task view/dialog/edit
   taskListUL.addEventListener("click", (e) => {
     // Don't open pop-up when clicking on radio button because that should only remove the task
     if (e.target.type === "radio") {
@@ -221,6 +229,7 @@ function ScreenController() {
     }
   });
 
+  // Submit edits from view/popup
   popupDiv.addEventListener("submit", (e) => {
     e.preventDefault();
     const daskData = {
@@ -235,7 +244,8 @@ function ScreenController() {
     }
   });
 
-  closePopup.addEventListener("click", () => popupDiv.close());
+  // Close popup
+  popupClose.addEventListener("click", () => popupDiv.close());
 
   // When the user clicks anywhere outside of the dialog, close it
   window.onclick = function (e) {
