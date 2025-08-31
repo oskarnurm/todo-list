@@ -7,40 +7,127 @@
   list-style-type: none;
 }
 
-/* Undo the reset for dialogs (and their contents) */
+/* Let the browser center my dialogs*/
 dialog {
   margin: revert;
   padding: revert;
 }
 
-html {
-  /* responise font size ratio I found on the web */
-  font-size: calc(15px + 0.390625vw);
-}
-
 .todo {
-  display: grid;
-  grid-template-areas: "sidebar main";
-  grid-template-columns: 350px 1fr;
+  display: flex;
   min-height: 100vh;
 }
 
 .sidebar {
-  grid-area: sidebar;
+  flex-shrink: 0;
+  width: 300px;
   background: #fcfaf8;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar button {
+  border: none;
+  padding: 0px 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.sidebar-header {
+  display: flex;
+  gap: 20px;
+}
+
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.project-list li {
+  display: flex;
+  gap: 20px;
+  color: #666;
+  justify-content: space-between;
+}
+
+.project-list li:hover {
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+.sidebar-header h2 {
+  color: #dc4c3e;
 }
 
 .main {
-  grid-area: main;
+  flex: 1;
   background: #fff;
+  padding: 20px;
 }
 
-/* Base custom radio */
+.project-title {
+  margin-bottom: 20px;
+}
+
+.task-list li {
+  border-bottom: 1px solid #ccc;
+  padding: 10px 5px;
+}
+
+.task-list:hover {
+  cursor: pointer;
+}
+
+.task .task-title {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.task .task-title h4 {
+  font-weight: 400;
+}
+
+.task .task-desc {
+  font-size: 15px;
+  color: grey;
+}
+
+.task .task-date {
+  font-size: 15px;
+  color: black;
+}
+
+.show-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.show-form .button-icon {
+  font-size: 20px;
+  color: #dc4c3e;
+}
+
+.show-form .button-text {
+  font-size: 16px;
+}
+
+.show-form:hover {
+  color: #dc4c3e;
+}
+
 input[type="radio"] {
   appearance: none;
-  -webkit-appearance: none; /* Safari */
-  width: 0.8rem;
-  height: 0.8rem;
+  width: 20px;
+  height: 20px;
   border: 2px solid currentColor;
   border-radius: 50%;
   display: inline-block;
@@ -65,11 +152,8 @@ input[type="radio"].prio-low {
   color: grey;
 }
 
-@media (max-width: calc(350px + 450px - 1px)) {
-  .todo {
-    grid-template-columns: 1fr;
-    grid-template-areas: "main";
-  }
+/* hide sidebar when viewport too small */
+@media (max-width: 799px) {
   .sidebar {
     display: none;
   }
