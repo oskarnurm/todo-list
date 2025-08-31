@@ -25,6 +25,7 @@ function Project(title) {
   let tasks = [];
 
   const getTitle = () => _title;
+  const setTitle = (newTitle) => (_title = newTitle);
   const getTaskList = () => tasks;
   const addTask = (task) => tasks.push(task);
   const updateTaskList = (newList) => (tasks = newList);
@@ -36,6 +37,7 @@ function Project(title) {
   return {
     getId,
     getTitle,
+    setTitle,
     getTaskList,
     addTask,
     updateTaskList,
@@ -47,23 +49,73 @@ function Project(title) {
 function TodoController() {
   let projects = [];
 
+  const saveToStorage = () => {
+    const projectsData = projects.map((project) => ({
+      id: project.getId(),
+      title: project.getTitle(),
+      tasks: project.getTaskList().map((task) => ({
+        id: task.getId(),
+        title: task.getTitle(),
+        desc: task.getDesc(),
+        date: task.getDate(),
+        prio: task.getPrio(),
+      })),
+    }));
+    localStorage.setItem("Todo", JSON.stringify(projectsData));
+  };
+
+  const loadFromStorage = () => {
+    const savedData = localStorage.getItem("Todo");
+    if (savedData) {
+      const projectsData = JSON.parse(savedData);
+
+      projectsData.forEach((projectData) => {
+        const project = Project(projectData.title); // Recreate with methods
+        projectData.tasks.forEach((taskData) => {
+          const task = Task(taskData); // Recreate with methods
+          project.addTask(task);
+        });
+        projects.push(project);
+      });
+    }
+  };
+
   const createProject = (title) => {
     const newProject = Project(title);
     projects.push(newProject);
+    saveToStorage();
     return newProject;
   };
 
   const createTask = (project, taskData) => {
     const newTask = Task(taskData);
     project.addTask(newTask);
+    saveToStorage();
     return newTask;
+  };
+
+  const updateTask = (task, taskData) => {
+    task.updateTask(taskData);
+    saveToStorage();
+  };
+
+  const removeTask = (project, id) => {
+    project.removeTaskById(id);
+    saveToStorage();
   };
 
   const findProjectById = (id) =>
     projects.find((project) => project.getId() === id);
 
-  const removeProjectById = (id) =>
-    (projects = projects.filter((project) => project.getId() !== id));
+  const updateProject = (project, newTitle) => {
+    project.setTitle(newTitle);
+    saveToStorage();
+  };
+
+  const removeProjectById = (id) => {
+    projects = projects.filter((project) => project.getId() !== id);
+    saveToStorage();
+  };
 
   const getProjects = () => projects;
 
@@ -73,6 +125,11 @@ function TodoController() {
     createTask,
     getProjects,
     removeProjectById,
+    saveToStorage,
+    updateTask,
+    removeTask,
+    updateProject,
+    loadFromStorage,
   };
 }
 
@@ -80,6 +137,14 @@ function ScreenController() {
   let SELECTED_PROJECT = null;
   let SELECTED_TASK = null;
   const todo = TodoController();
+  todo.loadFromStorage();
+
+  // Make default project if non persisted
+  if (todo.getProjects().length === 0) {
+    SELECTED_PROJECT = todo.createProject("Inbox");
+  } else {
+    SELECTED_PROJECT = todo.getProjects()[0];
+  }
 
   const taskListUL = document.querySelector(".task-list");
   const projectListUL = document.querySelector(".project-list");
@@ -100,20 +165,6 @@ function ScreenController() {
   const popupTaskDesc = document.getElementById("popup-desc");
   const popupTaskDate = document.getElementById("popup-date");
   const popupTaskPrio = document.getElementById("popup-prio");
-
-  // Dummy data
-  const defaultProject = todo.createProject("Default");
-  todo.createProject("inbox");
-  todo.createProject("school");
-  todo.createTask(defaultProject, { title: "clean room" });
-  todo.createTask(defaultProject, { title: "Do homework" });
-  todo.createTask(defaultProject, { title: "Walk the dog" });
-
-  SELECTED_PROJECT = defaultProject;
-
-  function removeTaskById(project, taskId) {
-    project.removeTaskById(taskId);
-  }
 
   function createProjectElement(project) {
     const li = document.createElement("li");
@@ -170,21 +221,21 @@ function ScreenController() {
     showTaskForm.hidden = false;
   }
 
-  function renderProjects() {
+  function renderProjects(projects) {
     projectListUL.textContent = "";
-    todo.getProjects().forEach((project) => {
+    projects.forEach((project) => {
       const projectElement = createProjectElement(project);
       projectListUL.appendChild(projectElement);
     });
   }
 
-  // Event listeners
   // Get projects name
   addProjectBtn.addEventListener("click", () => {
+    // TODO: use dialog to get project name in the future
     const title = prompt("Enter project name:");
     if (!title) return;
     todo.createProject(title);
-    renderProjects();
+    renderProjects(todo.getProjects());
   });
 
   // Show task form
@@ -222,7 +273,7 @@ function ScreenController() {
   taskListUL.addEventListener("change", (e) => {
     if (e.target.type === "radio") {
       const taskId = e.target.closest(".task").dataset.taskId;
-      removeTaskById(SELECTED_PROJECT, taskId);
+      todo.removeTask(SELECTED_PROJECT, taskId);
       renderProjectTaskList(SELECTED_PROJECT);
     }
   });
@@ -242,7 +293,8 @@ function ScreenController() {
     if (e.target.matches("button.project-remove")) {
       const projectId = e.target.closest(".project").dataset.projectId;
       todo.removeProjectById(projectId);
-      renderProjects();
+      renderProjects(todo.getProjects());
+      // TODO: figure out a prettier way to do this?
       taskListUL.textContent = "";
       projectTitleDiv.textContent = "";
       showTaskForm.hidden = true;
@@ -278,7 +330,7 @@ function ScreenController() {
       prio: popupTaskPrio.value,
     };
     if (SELECTED_TASK) {
-      SELECTED_TASK.updateTask(daskData);
+      todo.updateTask(SELECTED_TASK, daskData);
       renderProjectTaskList(SELECTED_PROJECT);
       popupDiv.close();
     }
@@ -294,8 +346,8 @@ function ScreenController() {
     }
   };
 
-  renderProjects();
-  renderProjectTaskList(defaultProject);
+  renderProjects(todo.getProjects());
+  renderProjectTaskList(SELECTED_PROJECT);
 }
 
 ScreenController();
