@@ -103,7 +103,7 @@ dialog {
   color: black;
 }
 
-.show-form {
+.show-form:not([hidden]) {
   display: flex;
   align-items: center;
   gap: 10px;
