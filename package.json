@@ -6,8 +6,8 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "start": "webpack serve --config webpack.dev.js",
-    "dev": "webpack --config webpack.dev.js",
-    "deploy": "git subtree push --prefix dist origin gh-pages"
+    "deploy": "gh-pages -d dist",
+    "predeploy": "npm run build"
   },
   "repository": {
     "type": "git",
