@@ -70,9 +70,9 @@ function TodoController() {
       const projectsData = JSON.parse(savedData);
 
       projectsData.forEach((projectData) => {
-        const project = Project(projectData.title); // Recreate with methods
+        const project = Project(projectData.title);
         projectData.tasks.forEach((taskData) => {
-          const task = Task(taskData); // Recreate with methods
+          const task = Task(taskData);
           project.addTask(task);
         });
         projects.push(project);
@@ -139,7 +139,7 @@ function ScreenController() {
   const todo = TodoController();
   todo.loadFromStorage();
 
-  // Make default project if non persisted
+  // Make default project if non persisted in localStorage
   if (todo.getProjects().length === 0) {
     SELECTED_PROJECT = todo.createProject("Inbox");
   } else {
@@ -150,7 +150,7 @@ function ScreenController() {
   const projectListUL = document.querySelector(".project-list");
   const projectTitleDiv = document.querySelector(".project-title");
   const addProjectBtn = document.querySelector(".project-add");
-  const showTaskForm = document.querySelector(".show-form");
+  const showTaskFormBtn = document.querySelector(".show-form");
 
   const formDiv = document.querySelector(".form");
   const formTitle = document.getElementById("form-title");
@@ -218,7 +218,7 @@ function ScreenController() {
       const taskElement = createTaskElement(task);
       taskListUL.appendChild(taskElement);
     });
-    showTaskForm.hidden = false;
+    showTaskFormBtn.hidden = false;
   }
 
   function renderProjects(projects) {
@@ -239,16 +239,17 @@ function ScreenController() {
   });
 
   // Show task form
-  showTaskForm.addEventListener("click", () => {
+  showTaskFormBtn.addEventListener("click", () => {
     formDiv.hidden = false;
-    showTaskForm.hidden = true;
+    showTaskFormBtn.hidden = true;
   });
 
   // Cancel task form
-  formCancel.addEventListener("click", () => {
-    formDiv.reset();
+  formCancel.addEventListener("click", (e) => {
+    e.preventDefault();
     formDiv.hidden = true;
-    showTaskForm.hidden = false;
+    formDiv.reset();
+    showTaskFormBtn.hidden = false;
   });
 
   // Submit the task form
@@ -265,7 +266,7 @@ function ScreenController() {
     // Does the rendering order matter here?
     formDiv.hidden = true;
     renderProjectTaskList(SELECTED_PROJECT);
-    showTaskForm.hidden = false;
+    showTaskFormBtn.hidden = false;
     formDiv.reset();
   });
 
@@ -297,7 +298,7 @@ function ScreenController() {
       // TODO: figure out a prettier way to do this?
       taskListUL.textContent = "";
       projectTitleDiv.textContent = "";
-      showTaskForm.hidden = true;
+      showTaskFormBtn.hidden = true;
     }
   });
 
