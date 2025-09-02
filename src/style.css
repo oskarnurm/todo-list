@@ -164,9 +164,13 @@ input[type="radio"].prio-low {
   gap: 5px;
 }
 
-input[type="text"] {
-  border: none;
-  outline: none;
+input[type="text"],
+input:not([type]) {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  appearance: none;
+  background-clip: padding-box; /* avoids ghost borders in some WebKit builds */
 }
 
 #form-title::placeholder {
