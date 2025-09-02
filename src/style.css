@@ -168,7 +168,6 @@ input[type="text"],
 input:not([type]) {
   border: 0;
   outline: 0;
-  background-clip: padding-box; /* avoids ghost borders in some WebKit builds */
 }
 
 #form-title::placeholder {
